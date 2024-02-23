@@ -5,10 +5,10 @@ const bodyParser = require('body-parser');
  *  Example of using ES6 syntectic sugar to create Express JS server
  */
 class ExpressServer {
-  constructor(hostname =process.env.LOCAL_HOST, port= process.env.DEFAULT_PORT) {
+  constructor() {
     this.serverName = 'Express Server';
-    this.hostname = hostname;
-    this.port = port;
+    this.hostname = 'localhost';
+    this.port = 8000;
 
     //Auto Start Server
     this.initServer()
