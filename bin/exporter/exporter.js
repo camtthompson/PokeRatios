@@ -9,7 +9,7 @@ export const convertToUsableCsv = (json, setName) => {
 
     // Converts your Array<Object> to a CsvOutput string based on the configs
     const csv = generateCsv(csvConfig)(json);
-    const filename = `modernsets/${setName}.csv`;
+    const filename = `exportedCsvs/${setName}.csv`;
     const csvBuffer = new Uint8Array(Buffer.from(asString(csv)));
 
     // Write the csv file to disk

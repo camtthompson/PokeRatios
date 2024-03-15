@@ -32,20 +32,6 @@ y.command({
 // TODO set the fields here that are passed as arguments
 const minCost = 5;
 const minScore = process.argv.indexOf('-s') ? parseInt(process.argv[process.argv.indexOf('-s') + 1]) : 8;
-// const setName = process.argv[process.argv.indexOf('-j') + 1];
-// const encodedSetName = encodeURI(setName)
-// const jsonUrlToProcess = `https://www.pokedata.io/api/cards?set_name=${encodedSetName}&stats=kwan`
-
-// fetch(jsonUrlToProcess).then((response) => {
-//     response.json().then(json => {
-//       const currentSet = new PokeRatioSet(json);
-//       const processedJson = currentSet.getProcessedSet(minScore, minCost);
-
-//       convertToUsableCsv(processedJson, setName)
-//     });
-// })
-
-
 const jsonUrlToProcess = process.argv[process.argv.indexOf('-j') + 1]
 
 fetch(jsonUrlToProcess).then((response) => {
@@ -59,8 +45,9 @@ fetch(jsonUrlToProcess).then((response) => {
             const encodedSetName = encodeURI(setName);
             const setUrlToProcess = `https://www.pokedata.io/api/cards?set_name=${encodedSetName}&stats=kwan`;
             const releaseDate = setInfo.release_date;
+            const language = setInfo.language;
 
-            setPromises.push(processSet(setName, setUrlToProcess, releaseDate, minCost, minScore));
+            setPromises.push(processSet(setName, setUrlToProcess, releaseDate, language, minCost, minScore));
       }
 
       Promise.all(setPromises).then((processedSets) => {
@@ -69,17 +56,18 @@ fetch(jsonUrlToProcess).then((response) => {
             }
             console.log('processedSet: ' + processedSets);
 
-            convertToUsableCsv(allProcessedJsons, "All Cards");
+            // convertToUsableCsv(allProcessedJsons, "All Cards");
       });
 
     });
 });
 
-const processSet = (setName, setUrl, releaseDate, minCost, minScore) => {
-      return new Promise(resolve => setTimeout(resolve, 600)).then(() => fetch(setUrl).then((response) => {
+const processSet = (setName, setUrl, releaseDate, language, minCost, minScore) => {
+      return new Promise(resolve => setTimeout(resolve, 2000)).then(() => fetch(setUrl).then((response) => {
             response.json().then(json => {
                   const currentSet = new PokeRatioSet(json);
-                  const processedSet = currentSet.getProcessedSet(minScore, minCost, releaseDate);
+                  const releasedYear = new Date(releaseDate).getFullYear();
+                  const processedSet = currentSet.getProcessedSet(minScore, minCost, releasedYear, language);
 
                   if (processedSet.length > 0) {
                         convertToUsableCsv(processedSet, setName);

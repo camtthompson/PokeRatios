@@ -1,22 +1,3 @@
-// export interface IPokeDataCard {
-//     hot: number,
-//     id: number,
-//     img_url: string,
-//     live: boolean,
-//     name: string,
-//     num: string,
-//     secret: boolean,
-//     set_id: number,
-//     set_name: string,
-//     stat_url: string,
-//     stats: Array<IPokeDataStat>,
-// }
-
-// export interface IPokeDataStat {
-//     avg?: number,
-//     source: PokeDataSource,
-// }
-
 export const PokeDataSource = {
     RAW: 0, 
     PSA1: 1,
@@ -38,14 +19,26 @@ export const PokeDataSource = {
  */
 const GRADING_EXPENSE = 17;
 
+/**
+ * eBay selling rate (15%)
+ */
+const TOTAL_PROCEEDS = 0.85;
+
 export class PokeRatioCard {
     cardPrice = 0;
+    medianCardPrice = 0;
+    tcgpPrice = 0;
+    rawPrice = 0;
+    mBuyPrice = 0;
+    nmBuyPrice = 0;
+    lpBuyPrice = 0;
     name;
     number;
     setName;
     imgUrl;
 
-    stats = new Map();
+    averageStats = new Map();
+    medianStats = new Map();
 
     constructor(pokeDataCard) {
         this.name = pokeDataCard.name;
@@ -53,28 +46,43 @@ export class PokeRatioCard {
         this.number = pokeDataCard.num;
         this.imgUrl = pokeDataCard.img_url;
 
-        if (pokeDataCard.stats){
-            this.stats = new Map(pokeDataCard.stats.map((stat) => [stat.source, stat.avg]));
+        if(pokeDataCard.stats){
+            this.averageStats = new Map(pokeDataCard.stats.map((stat) => [stat.source, stat.avg]));
+            this.medianStats = new Map(pokeDataCard.stats.map((stat) => [stat.source, stat.median]));
         }
+
         this.setCardPrice();
+        this.setMedianCardPrice();
+
+        this.mBuyPrice = this.setBuyPrice([PokeDataSource.PSA9, PokeDataSource.PSA10])?.toFixed(2);
+        this.nmBuyPrice = this.setBuyPrice([PokeDataSource.PSA7, PokeDataSource.PSA8, PokeDataSource.PSA9])?.toFixed(2);
+        this.lpBuyPrice = this.setBuyPrice([PokeDataSource.PSA4, PokeDataSource.PSA5, PokeDataSource.PSA6])?.toFixed(2);
     }
   
     /** Returns the average value of the given card given the source */
     getStat(source) {
-        return this.stats.get(source);
+        return this.averageStats.get(source);
     }
 
-    /** PSA # Ratio = Card Price + Expenses / PSA Sale Price  */
+    /** PSA # Ratio = Card Price / PSA Sale Price  */
     getPSARatio(source) {
         const psaAvgSalePrice = this.getStat(source);
 
         if (this.cardPrice && psaAvgSalePrice) {
-            const totalCardCost = GRADING_EXPENSE + this.cardPrice;
-
-            return (psaAvgSalePrice / totalCardCost);
+            return (psaAvgSalePrice / this.cardPrice);
         }
 
         return undefined;
+    }
+
+    getEbayProceeds(source) {
+        const psaAvgSalePrice = this.getStat(source);
+
+        if (psaAvgSalePrice) {
+            return psaAvgSalePrice * TOTAL_PROCEEDS;
+        }
+
+        return 0;
     }
 
     /** 
@@ -114,13 +122,40 @@ export class PokeRatioCard {
     }
 
     setCardPrice() {
-        const rawPrice = this.stats.get(PokeDataSource.RAW) ?? 0;
-        const tcgpPrice = this.stats.get(PokeDataSource.TCGP) ?? 0;
+        this.rawPrice = this.averageStats.get(PokeDataSource.RAW) ?? 0;
+        this.tcgpPrice = this.averageStats.get(PokeDataSource.TCGP) ?? 0;
 
-        if (rawPrice > 0 && tcgpPrice > 0) {
-            this.cardPrice = (rawPrice + tcgpPrice) / 2;
+        if (this.rawPrice > 0 && this.tcgpPrice > 0) {
+            this.cardPrice = (this.rawPrice + this.tcgpPrice) / 2;
         } else {
-            this.cardPrice = rawPrice ?? tcgpPrice;
+            this.cardPrice = this.rawPrice ?? this.tcgpPrice;
         }
+    }
+
+    setMedianCardPrice() {
+        let medianTcgPlayerCost = this.medianStats.get(PokeDataSource.TCGP);
+        this.medianCardPrice = this.medianStats.get(PokeDataSource.RAW);
+
+        if (medianTcgPlayerCost > 0 && this.medianCardPrice <= 0) {
+            this.medianCardPrice = medianTcgPlayerCost;
+        } else if (this.medianCardPrice  <= 0) {
+            this.medianCardPrice = 0;
+        }
+    }
+
+    /**
+     * This should get the get the lowest profitable ratio (> 1) and multiply it by the raw price
+     */
+    setBuyPrice(grades) {
+        let lowestSellPrice = this.getEbayProceeds(grades[0] ?? this.getStat(PokeDataSource.PSA10));
+
+        for (let grade of grades) {
+            let proceeds = this.getEbayProceeds(grade);
+            if (proceeds < lowestSellPrice) {
+                lowestSellPrice = proceeds;
+            }
+        }
+
+        return lowestSellPrice - GRADING_EXPENSE;
     }
 }
