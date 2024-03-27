@@ -158,4 +158,14 @@ export class PokeRatioCard {
 
         return lowestSellPrice - GRADING_EXPENSE;
     }
+
+    /**
+     * This should get the get the lowest profitable ratio (> 1) and multiply it by the raw price
+     */
+    getBuyPrice(grade) {
+        let sellPrice = this.getEbayProceeds(grade);
+
+        return sellPrice - GRADING_EXPENSE;
+    }
+
 }

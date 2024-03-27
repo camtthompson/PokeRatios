@@ -24,6 +24,7 @@ export class PokeRatioSet {
                 MBuyPrice: Math.max(pCard.nmBuyPrice, pCard.mBuyPrice),
                 MRatio: (pCard.mBuyPrice / pCard.cardPrice).toFixed(2),
                 YearReleased: yearReleased,
+                Language: language,
                 PokeRatio: pCard.getPokeRatio().toFixed(2),
                 PSA1Ratio: pCard.getPSARatio(PokeDataSource.PSA1)?.toFixed(2) ?? 0,
                 PSA2Ratio: pCard.getPSARatio(PokeDataSource.PSA2)?.toFixed(2) ?? 0,
@@ -32,18 +33,23 @@ export class PokeRatioSet {
                 PSA4Ratio: pCard.getPSARatio(PokeDataSource.PSA4)?.toFixed(2) ?? 0,
                 PSA4AvgSell: pCard.getStat(PokeDataSource.PSA4)?.toFixed(2) ?? 0,
                 PSA5Ratio: pCard.getPSARatio(PokeDataSource.PSA5)?.toFixed(2) ?? 0,
+                PSA5BuyPrice: pCard.getBuyPrice(PokeDataSource.PSA5)?.toFixed(2) ?? 0,
                 PSA5AvgSell: pCard.getStat(PokeDataSource.PSA5)?.toFixed(2) ?? 0,
                 PSA6Ratio: pCard.getPSARatio(PokeDataSource.PSA6)?.toFixed(2) ?? 0,
+                PSA6BuyPrice: pCard.getBuyPrice(PokeDataSource.PSA6)?.toFixed(2) ?? 0,
                 PSA6AvgSell: pCard.getStat(PokeDataSource.PSA6)?.toFixed(2) ?? 0,
                 PSA7Ratio: pCard.getPSARatio(PokeDataSource.PSA7)?.toFixed(2) ?? 0,
+                PSA7BuyPrice: pCard.getBuyPrice(PokeDataSource.PSA7)?.toFixed(2) ?? 0,
                 PSA7AvgSell: pCard.getStat(PokeDataSource.PSA7)?.toFixed(2) ?? 0,
                 PSA8Ratio: pCard.getPSARatio(PokeDataSource.PSA8)?.toFixed(2) ?? 0,
+                PSA8BuyPrice: pCard.getBuyPrice(PokeDataSource.PSA8)?.toFixed(2) ?? 0,
                 PSA8AvgSell: pCard.getStat(PokeDataSource.PSA8)?.toFixed(2) ?? 0,
                 PSA9Ratio: pCard.getPSARatio(PokeDataSource.PSA9)?.toFixed(2) ?? 0,
+                PSA9BuyPrice: pCard.getBuyPrice(PokeDataSource.PSA9)?.toFixed(2) ?? 0,
                 PSA9AvgSell: pCard.getStat(PokeDataSource.PSA9)?.toFixed(2) ?? 0,
                 PSA10Ratio: pCard.getPSARatio(PokeDataSource.PSA10)?.toFixed(2) ?? 0,
+                PSA10BuyPrice: pCard.getBuyPrice(PokeDataSource.PSA10)?.toFixed(2) ?? 0,
                 PSA10AvgSell: pCard.getStat(PokeDataSource.PSA10)?.toFixed(2) ?? 0,
-                Language: language
             }
 
             if (pCard.cardPrice > minCost && pCard.getStat(minScore)) {
