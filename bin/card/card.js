@@ -11,6 +11,7 @@ export const PokeDataSource = {
     PSA9: 9,
     PSA10: 10,
     TCGP: 11,
+    EBAY: 12,
 }
 
 /**
@@ -28,6 +29,7 @@ export class PokeRatioCard {
     cardPrice = 0;
     medianCardPrice = 0;
     tcgpPrice = 0;
+    eBayPrice = 0;
     rawPrice = 0;
     mBuyPrice = 0;
     nmBuyPrice = 0;
@@ -124,6 +126,7 @@ export class PokeRatioCard {
     setCardPrice() {
         this.rawPrice = this.averageStats.get(PokeDataSource.RAW) ?? 0;
         this.tcgpPrice = this.averageStats.get(PokeDataSource.TCGP) ?? 0;
+        this.eBayPrice = this.averageStats.get(PokeDataSource.EBAY) ?? 0;
 
         if (this.rawPrice > 0 && this.tcgpPrice > 0) {
             this.cardPrice = (this.rawPrice + this.tcgpPrice) / 2;

@@ -37,17 +37,22 @@ const jsonUrlToProcess = process.argv[process.argv.indexOf('-j') + 1]
 fetch(jsonUrlToProcess).then((response) => {
     response.json().then(json => {
       const setInfoArray = json.pageProps.setInfoArr;
+      const baseDelay = 250;
       const allProcessedJsons = [];
+
       let setPromises = [];
 
-      for (let setInfo of (setInfoArray)) {
+      for (let [index, setInfo] of setInfoArray.entries()) {
             const setName = setInfo.name;
             const encodedSetName = encodeURI(setName);
             const setUrlToProcess = `https://www.pokedata.io/api/cards?set_name=${encodedSetName}&stats=kwan`;
-            const releaseDate = setInfo.release_date;
+            const releasedYear = new Date(setInfo.release_date).getFullYear();
             const language = setInfo.language;
+            const delay = baseDelay * index;
 
-            setPromises.push(processSet(setName, setUrlToProcess, releaseDate, language, minCost, minScore));
+            if (releaseYear > 2019 && language === 'ENGLISH') {
+                  setPromises.push(processSet(setName, setUrlToProcess, releasedYear, language, minCost, minScore, delay));
+            }
       }
 
       Promise.all(setPromises).then((processedSets) => {
@@ -55,18 +60,15 @@ fetch(jsonUrlToProcess).then((response) => {
                   allProcessedJsons.push(processedSet);
             }
             console.log('processedSet: ' + processedSets);
-
-            // convertToUsableCsv(allProcessedJsons, "All Cards");
       });
 
     });
 });
 
-const processSet = (setName, setUrl, releaseDate, language, minCost, minScore) => {
-      return new Promise(resolve => setTimeout(resolve, 2000)).then(() => fetch(setUrl).then((response) => {
+const processSet = (setName, setUrl, releasedYear, language, minCost, minScore, delay) => {
+      return new Promise(resolve => setTimeout(resolve, delay)).then(() => fetch(setUrl).then((response) => {
             response.json().then(json => {
                   const currentSet = new PokeRatioSet(json);
-                  const releasedYear = new Date(releaseDate).getFullYear();
                   const processedSet = currentSet.getProcessedSet(minScore, minCost, releasedYear, language);
 
                   if (processedSet.length > 0) {
@@ -76,11 +78,4 @@ const processSet = (setName, setUrl, releaseDate, language, minCost, minScore) =
                   return processedSet;
             });
       }))
-}
-
-var sleepSetTimeout_ctrl;
-
-function sleep(ms) {
-    clearInterval(sleepSetTimeout_ctrl);
-    return new Promise(resolve => sleepSetTimeout_ctrl = setTimeout(resolve, ms));
 }
