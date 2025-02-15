@@ -1,5 +1,6 @@
 import { mkConfig, generateCsv, asString } from "export-to-csv";
-import { writeFile } from "node:fs";
+import { parse } from "csv-parse"
+import { writeFile, createReadStream } from "node:fs";
 import { Buffer } from "node:buffer";
 
 export const convertToUsableCsv = (json, setName) => { 
@@ -18,3 +19,17 @@ export const convertToUsableCsv = (json, setName) => {
         console.log("file saved: ", filename, json);
     });
 }
+
+export const openCsv = (orderNumber) => new Promise((resolve, reject) => { 
+    let filePath = `psaLists/psa-order-${orderNumber}.csv`
+    let records = [];
+
+    createReadStream(filePath)
+        .pipe(parse({ delimiter: ",", from_line: 2, relax_quotes: true }))
+        .on("data", (row) => {
+            records.push(row);
+        })
+        .on("finish", () => {
+            resolve(records);
+        })
+});
