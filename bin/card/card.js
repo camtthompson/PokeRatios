@@ -43,7 +43,7 @@ export class PokeRatioCard {
   averageStats = new Map();
   medianStats = new Map();
 
-  constructor(setCode, pokeDataCard) {
+  constructor(pokeDataCard, setCode) {
     this.UCID = setCode + pokeDataCard.num;
     this.name = pokeDataCard.name;
     this.setName = pokeDataCard.set_name;

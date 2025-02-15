@@ -14,17 +14,12 @@ export const processUrl = () => {
       let setPromises = [];
 
       for (let [index, setInfo] of setInfoArray.entries()) {
-        const setName = setInfo.name;
-        const encodedSetName = encodeURIComponent(setName);
-        const setUrlToProcess = `https://www.pokedata.io/api/cards?set_name=${encodedSetName}&stats=kwan`;
-        const releasedYear = new Date(setInfo.release_date).getFullYear();
-        const language = setInfo.language;
         const delay = baseDelay * index;
+        const yearReleased = new Date(setInfo.release_date).getFullYear();
+        const language = setInfo.language;
 
-        if (releasedYear > 2019 && language === "ENGLISH") {
-          setPromises.push(
-            processSet(setName, setUrlToProcess, releasedYear, language, delay)
-          );
+        if (yearReleased > 2016 && language === "ENGLISH") {
+          setPromises.push(processSet(setInfo, delay));
         }
       }
 
@@ -37,19 +32,18 @@ export const processUrl = () => {
     });
   });
 
-  const processSet = (setName, setUrl, releasedYear, language, delay) => {
+  const processSet = (setInfo, delay) => {
+    const encodedSetName = encodeURIComponent(setInfo.name);
+    const setUrl = `https://www.pokedata.io/api/cards?set_name=${encodedSetName}&stats=kwan`;
+
     return new Promise((resolve) => setTimeout(resolve, delay)).then(() =>
       fetch(setUrl).then((response) => {
         response.json().then((json) => {
           const currentSet = new PokeRatioSet(json);
-          const processedSet = currentSet.getProcessedSet(
-            setName,
-            releasedYear,
-            language
-          );
+          const processedSet = currentSet.getProcessedSet(setInfo);
 
           if (processedSet.length > 0) {
-            convertToUsableCsv(processedSet, setName);
+            convertToUsableCsv(processedSet, setInfo.name);
           }
 
           return processedSet;

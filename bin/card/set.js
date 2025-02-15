@@ -1,5 +1,5 @@
 import { PokeRatioCard, PokeDataSource } from "./card.js";
-import { getSetCode } from "./setCode.js";
+import { getLangCode, getSetCode } from "./setCode.js";
 
 export class PokeRatioSet {
   listOfCards;
@@ -8,12 +8,16 @@ export class PokeRatioSet {
     this.listOfCards = pokeDataCards;
   }
 
-  getProcessedSet(setName, yearReleased, language) {
+  getProcessedSet(setInfo) {
+    const langCode = getLangCode(setInfo.language);
     const setCode = setInfo.code ? setInfo.code : getSetCode(setInfo.name);
+    const UCID = setCode ? langCode + setCode + pCard.number : undefined;
+    const yearReleased = new Date(setInfo.release_date).getFullYear();
+    const language = setInfo.language;
     let processedCards = [];
 
     for (const card of this.listOfCards) {
-      const pCard = new PokeRatioCard(card);
+      const pCard = new PokeRatioCard(card, setCode);
       const psa10Value = pCard.getStat(PokeDataSource.PSA10);
       const gradeCost = psa10Value > 500 ? 65 : 20;
       const p10Proceeds = (
@@ -26,7 +30,7 @@ export class PokeRatioSet {
         Number: pCard.number,
         SetName: pCard.setName,
         AvgPrice: pCard.cardPrice.toFixed(2),
-        PSA10Proceeds: p10Proceeds,
+        PSA10Proceeds: isNaN(p10Proceeds) ? undefined : p10Proceeds,
         PSA10PRatio: (p10Proceeds / pCard.cardPrice).toFixed(2),
         TCGPPrice: pCard.tcgpPrice.toFixed(2),
         EBAYPrice: pCard.eBayPrice.toFixed(2),
@@ -43,7 +47,7 @@ export class PokeRatioSet {
         PSA9AvgSell: pCard.getStat(PokeDataSource.PSA9)?.toFixed(2) ?? 0,
         YearReleased: yearReleased,
         Language: language,
-        UCID: setCode ? setCode + pCard.number : undefined,
+        UCID: UCID,
       };
 
       processedCards.push(processedCard);
