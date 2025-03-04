@@ -1,5 +1,6 @@
 import { convertToUsableCsv } from "./exporter/exporter.js";
 import { PokeRatioSet } from "./card/set.js";
+import { storeCardPrices } from "./api/history/historicalDataHandler.js";
 
 export const processUrl = () => {
   // TODO set the fields here that are passed as arguments
@@ -44,6 +45,7 @@ export const processUrl = () => {
 
           if (processedSet.length > 0) {
             convertToUsableCsv(processedSet, setInfo.name);
+            storeCardPrices(processedSet);
           }
 
           return processedSet;

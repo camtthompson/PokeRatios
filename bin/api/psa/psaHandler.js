@@ -15,8 +15,9 @@ export const getImagesByCertNumber = (certNumber) => {
     )
       .then((response) => {
         let photosString = "";
+        let json = response.json();
 
-        response.json().map((image) => {
+        json.map((image) => {
           if (image.IsFrontImage) {
             photosString = image.ImageURL + "|" + photosString;
           } else {
@@ -28,7 +29,7 @@ export const getImagesByCertNumber = (certNumber) => {
       })
       .catch((err) => {
         console.log(err);
-        rejects(err);
+        resolve(undefined);
       })
   );
 };

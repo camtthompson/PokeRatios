@@ -11,7 +11,6 @@ export class PokeRatioSet {
   getProcessedSet(setInfo) {
     const langCode = getLangCode(setInfo.language);
     const setCode = setInfo.code ? setInfo.code : getSetCode(setInfo.name);
-    const UCID = setCode ? langCode + setCode + pCard.number : undefined;
     const yearReleased = new Date(setInfo.release_date).getFullYear();
     const language = setInfo.language;
     let processedCards = [];
@@ -25,6 +24,7 @@ export class PokeRatioSet {
         pCard.cardPrice -
         gradeCost
       ).toFixed(2);
+      const UCID = setCode ? langCode + setCode + pCard.number : undefined;
       const processedCard = {
         Name: pCard.name,
         Number: pCard.number,
@@ -48,6 +48,10 @@ export class PokeRatioSet {
         YearReleased: yearReleased,
         Language: language,
         UCID: UCID,
+        basicPricingInfo: {
+          PSA10: pCard.getStat(PokeDataSource.PSA10)?.toFixed(2) ?? 0,
+          AVG: pCard.cardPrice.toFixed(2),
+        },
       };
 
       processedCards.push(processedCard);
