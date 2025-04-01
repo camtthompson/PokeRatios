@@ -13,9 +13,9 @@ export const getImagesByCertNumber = (certNumber) => {
         },
       }
     )
-      .then((response) => {
+      .then((response) => response.json())
+      .then((json) => {
         let photosString = "";
-        let json = response.json();
 
         json.map((image) => {
           if (image.IsFrontImage) {
@@ -29,7 +29,6 @@ export const getImagesByCertNumber = (certNumber) => {
       })
       .catch((err) => {
         console.log(err);
-        resolve(undefined);
       })
   );
 };
@@ -46,8 +45,8 @@ export const getPSASpecPopulation = (specId) => {
         },
       }
     )
-      .then((response) => {
-        let json = response.json();
+      .then((response) => response.json())
+      .then((json) => {
         let totalGrades = json.PSAPop.Total;
         let tenGrades = json.PSAPop.Grade10;
         let gemRate = (tenGrades / totalGrades).toFixed(2);

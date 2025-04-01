@@ -33,7 +33,7 @@ export const processPsaCsv = async () => {
       upc: undefined,
       price: marketPrice,
       quantity: 1,
-      photos: undefined,
+      photos: images,
       ebayConditionId: 2750,
       desciption: `${completeCardName} from ${nameValues.set}. Graded ${cardGradeValues.grade} by PSA.`,
       ebayFormat: "FixedPrice",

@@ -10,14 +10,19 @@ import {
 // Save card prices to json
 export const storeCardPrices = (processedSetCards) => {
   const currentDate = new Date().toLocaleDateString();
-  const historicalData = getHistoricalCardPrices();
+  const historicalData = getAllHistoricalCardPrices();
   const currentData = historicalData[currentDate]
     ? historicalData[currentDate]
     : {};
 
   for (let card of processedSetCards) {
-    if (card.basicPricingInfo.PSA10 > 0 && card.basicPricingInfo.AVG > 2) {
-      currentData[card.UCID] = card.basicPricingInfo;
+    if (card.PSA10Value > 0 && card.AvgPrice > 2) {
+      let basicPricingInfo = {
+        PSA10: card.PSA10Value,
+        AVG: card.AvgPrice,
+      };
+
+      currentData[card.UCID] = basicPricingInfo;
     }
   }
 
@@ -31,10 +36,23 @@ const saveHistoricalPrices = (cardPrices) => {
 };
 
 // Load card prices from json
-const getHistoricalCardPrices = () => {
+const getAllHistoricalCardPrices = () => {
   const psa10prices = readFileSync("history/psa10prices.json", {
     encoding: "utf-8",
   });
 
   return JSON.parse(psa10prices);
+};
+
+const getAllTimeStampCardPrices = (timeStamp) => {
+  const prices = getAllHistoricalCardPrices();
+
+  return prices[timeStamp];
+};
+
+export const getTimeStampedCardPrice = (timeStamp, UCID) => {
+  const timeStampPrices = getAllTimeStampCardPrices(timeStamp);
+  const cardPrices = timeStampPrices[UCID];
+
+  return cardPrices;
 };

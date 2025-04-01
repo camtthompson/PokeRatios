@@ -6,7 +6,7 @@ Can we calculate set value (sum of average price of card / total cards in set) (
 
 ## To generate csv with ratios:
 
-`pokeratio process -j "https://www.pokedata.io/_next/data/LRuC-nAOZmsV04oIkT8Hb/sets.json" -s 10 -c 1`
+`pokeratio process -j "https://www.pokedata.io/_next/data/RGcRxo3jsNj8PnBD18Eo7/sets.json" -d "2/27/2025" -d2 "2/18/2025"`
 
 ## To generate a full csv with the individual files:
 

@@ -27,7 +27,7 @@ const setCodeMap = {
   "Fusion Strike": "FST",
   "Brilliant Stars": "BRS",
   "Astral Radiance": "ASR",
-  "Pokémon GO": "PGO",
+  "Pokemon GO": "PGO",
   "Lost Origin": "LOR",
   "Silver Tempest": "SIT",
   "Crown Zenith": "CRZ",

@@ -1,6 +1,7 @@
 import { convertToUsableCsv } from "./exporter/exporter.js";
 import { PokeRatioSet } from "./card/set.js";
 import { storeCardPrices } from "./api/history/historicalDataHandler.js";
+import { getSetCode } from "./card/setCode.js";
 
 export const processUrl = () => {
   // TODO set the fields here that are passed as arguments
@@ -18,8 +19,9 @@ export const processUrl = () => {
         const delay = baseDelay * index;
         const yearReleased = new Date(setInfo.release_date).getFullYear();
         const language = setInfo.language;
+        const setCode = setInfo.code ? setInfo.code : getSetCode(setInfo.name);
 
-        if (yearReleased > 2016 && language === "ENGLISH") {
+        if (yearReleased > 2019 && language === "ENGLISH") {
           setPromises.push(processSet(setInfo, delay));
         }
       }
@@ -28,7 +30,6 @@ export const processUrl = () => {
         for (let processedSet of processedSets) {
           allProcessedJsons.push(processedSet);
         }
-        console.log("processedSet: " + processedSets);
       });
     });
   });
